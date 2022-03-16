@@ -8,7 +8,7 @@ app.use(cors())
 var conString = process.env.CONN;
 var pg = require("pg");
 
-
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/ping", (req, res) => {
@@ -19,12 +19,12 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
-app.get("/products", async (req, res) => {
+app.get("/sql", async (req, res) => {
     var client = new pg.Client(conString);
     await client.connect()
-    const res1 = await client.query('SELECT * from customers', [])
+    const filas = await client.query(req.query.sql, [])
     await client.end()
-    res.send(res1.rows);
+    res.send(filas.rows);
 });
 
 const PORT = process.env.PORT || 8080;
